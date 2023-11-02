@@ -1,19 +1,19 @@
 # Computer Network Assignment
 
-DEVELOP A NETWORK APPLICATION: BUILD A SIMPLE FILE-SHARING APPLICATION
+## DEVELOP A NETWORK APPLICATION: BUILD A SIMPLE FILE-SHARING APPLICATION
 
 > ### Centralized Directory Service
-> **1. Client contacts Napster (via TCP)**
+> **1. Client contacts Server (via TCP)**
 >   * Provides a list of files it will share
->   * ...and Napster’s central server updates the directory
+>   * ...and Server’s central server updates the directory
 >
 > **2. Client searches on a title**
->   * Napster identifies online clients with the file
+>   * Server identifies online clients with the file
 >   * ...and provides IP addresses
 >
 > **3. Client requests the file from the chosen supplier**  
 >   * Supplier transmits the file to the client
->   * Both client and supplier report status to Napster
+>   * Both client and supplier report status to Server
 > ### Properties
 > **1. Server’s directory continually updated**
 >   * Always know what files are currently available

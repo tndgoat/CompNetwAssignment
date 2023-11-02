@@ -1,10 +1,20 @@
 PRAGMA foreign_keys = ON;
 
+DROP TABLE IF EXISTS peers_account;
+CREATE TABLE peers_account (
+    session_id char(16) PRIMARY KEY,
+    username char(55) UNIQUE,
+    password_account char(55) NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES peers (session_id) ON DELETE CASCADE
+);
+
 DROP TABLE IF EXISTS peers;
 CREATE TABLE peers (
     session_id char(16) PRIMARY KEY,
     ip char(55) NOT NULL,
-    port char(5) NOT NULL
+    your_name char(100) NOT NULL,
+    port char(5) NOT NULL,
+    state_on_off boolean NOT NULL 
 );
 
 DROP TABLE IF EXISTS files;

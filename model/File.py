@@ -4,7 +4,6 @@ from database import database
 
 
 class File:
-
 	def __init__(self, file_md5, file_name, download_count):
 		self.file_md5 = file_md5
 		self.file_name = file_name

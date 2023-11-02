@@ -5,7 +5,6 @@ from sqlite3 import Error
 from sqlite3 import DatabaseError
 import os.path
 
-
 def exist(db_filename: str) -> bool:
 	""" Check if the given db exist
 
@@ -17,7 +16,6 @@ def exist(db_filename: str) -> bool:
 	if os.path.exists(db_filename):
 		return True
 	return False
-
 
 def create_database(db_filename: str) -> None:
 	""" Create a sqlite db file with the structure defined in the 'schema.sql' file
@@ -33,7 +31,6 @@ def create_database(db_filename: str) -> None:
 		exit(0)
 
 	if db_file is not None and sqlscript is not None:
-
 		# create a database connection
 		conn = get_connection(db_filename)
 
@@ -52,7 +49,6 @@ def create_database(db_filename: str) -> None:
 
 	else:
 		print("Error: cannot create the database file.")
-
 
 def reset_database(db_filename: str) -> bool:
 	""" Refresh the tables of the database
@@ -85,9 +81,7 @@ def reset_database(db_filename: str) -> bool:
 		exit(0)
 		return False
 
-
 def fill_seeds(db_filename: str) -> bool:
-
 	try:
 		reset_script = open('database/reset.sql', 'r')
 		seeds_script = open('database/seeds.sql', 'r')
@@ -111,7 +105,6 @@ def fill_seeds(db_filename: str) -> bool:
 		print(e)
 		exit(0)
 		return False
-
 
 def get_connection(db_filename: str) -> sqlite3.Connection:
 	""" create a database connection to the given SQLite database

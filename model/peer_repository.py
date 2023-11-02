@@ -2,7 +2,23 @@
 
 from database import database
 from .Peer import Peer
+from .Peer import Peer_account
 
+def find_account(conn: database.sqlite3.Connection, username: str) -> 'Peer_account':
+	""" Retrieve the peer with the given session_id
+	Parameters:
+		conn - the db connection
+		session_id - session id for a peer
+	Returns:
+		peer - first matching result for the research
+	"""
+	c = conn.cursor()
+	c.execute('SELECT * FROM peers_account WHERE username = ?', (username,))
+	row = c.fetchone()
+	if row is None:
+		return None 
+	peer_account = Peer_account(row['session_id'], username, row['password_account'])
+	return peer_account
 
 def find(conn: database.sqlite3.Connection, session_id: str) -> 'Peer':
 	""" Retrieve the peer with the given session_id
