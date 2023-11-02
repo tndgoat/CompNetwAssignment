@@ -1,8 +1,6 @@
-# Fapster
+# Computer Network Assignment
 
-:books: Reti Peer To Peer - Università degli Studi di Ferrara :books:
-
-A peer-to-peer server based on the Napster's approach:
+DEVELOP A NETWORK APPLICATION: BUILD A SIMPLE FILE-SHARING APPLICATION
 
 > ### Centralized Directory Service
 > **1. Client contacts Napster (via TCP)**
@@ -78,9 +76,6 @@ ADRE[4B].\#download[5B]
 - [ ] Peer implementation
 
 ## Authors :rocket:
-* [Federico Frigo](https://github.com/xBlue0)
-* [Niccolò Fontana](https://github.com/NicFontana)
-* [Giovanni Fiorini](https://github.com/GiovanniFiorini)
-* [Marco Rambaldi](https://github.com/jhonrambo93)
+* [Tung Nguyen Duy](https://github.com/tndgoat)
 
 Enjoy :sunglasses:

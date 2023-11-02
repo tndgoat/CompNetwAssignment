@@ -9,7 +9,6 @@ from utils import shell_colors as shell
 
 
 class Server:
-
 	def __init__(self, port: int):
 		self.port = port
 		self.ss = None

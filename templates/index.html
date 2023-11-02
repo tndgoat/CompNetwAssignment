@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>File-Sharing-App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <input type="checkbox" id="check">
+        <div class="login form">
+            <header>Login</header>
+            <form action="#">
+                <input type="text" placeholder="Enter your username">
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+                <span class="toggle-password" onclick="togglePasswordVisibility('loginPassword')">
+                    <i id="loginEyeIcon" class="far fa-eye" style="top: 55%;"></i>
+                </span>
+                <a href="#">Forgot password?</a>
+                <input type="button" class="button" value="Login">
+            </form>
+            <div class="signup">
+                <span class="signup">Don't have an account?
+                    <label for="check">Signup</label>
+                </span>
+            </div>
+        </div>
+
+        <div class="registration form">
+            <header>Signup</header>
+            <form action="#">
+                <input type="text" placeholder="Enter your username">
+                <input type="password" id="signupPassword" placeholder="Create a password">
+                <span class="toggle-password" onclick="togglePasswordVisibility('signupPassword')">
+                    <i id="signupEyeIcon" class="far fa-eye" style="top: 45%;"></i>
+                </span>
+                <input type="password" id="confirmSignupPassword" placeholder="Confirm your password">
+                <span class="toggle-password" onclick="togglePasswordVisibility('confirmSignupPassword')">
+                    <i id="confirmEyeIcon" class="far fa-eye" style="top: 35%;"></i>
+                </span>
+                <input type="button" class="button" value="Signup">
+            </form>
+            <div class="signup">
+                <span class="signup">Already have an account?
+                    <label for="check">Login</label>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="myScript.js"></script>
+</body>
+
+</html>
