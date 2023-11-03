@@ -4,8 +4,10 @@ from database import database
 from .Peer import Peer
 from .Peer import Peer_account
 
+
 def find_account(conn: database.sqlite3.Connection, username: str) -> 'Peer_account':
 	""" Retrieve the peer with the given session_id
+
 	Parameters:
 		conn - the db connection
 		session_id - session id for a peer
@@ -15,10 +17,14 @@ def find_account(conn: database.sqlite3.Connection, username: str) -> 'Peer_acco
 	c = conn.cursor()
 	c.execute('SELECT * FROM peers_account WHERE username = ?', (username,))
 	row = c.fetchone()
+
 	if row is None:
-		return None 
+		return None
+	
 	peer_account = Peer_account(row['session_id'], username, row['password_account'])
+
 	return peer_account
+
 
 def find(conn: database.sqlite3.Connection, session_id: str) -> 'Peer':
 	""" Retrieve the peer with the given session_id
@@ -26,7 +32,6 @@ def find(conn: database.sqlite3.Connection, session_id: str) -> 'Peer':
 	Parameters:
 		conn - the db connection
 		session_id - session id for a peer
-
 	Returns:
 		peer - first matching result for the research
 	"""
@@ -36,30 +41,29 @@ def find(conn: database.sqlite3.Connection, session_id: str) -> 'Peer':
 
 	if row is None:
 		return None
-
-	peer = Peer(session_id, row['ip'], row['port'])
+	
+	peer = Peer(session_id, row['ip'], row['your_name'], row['port'], row['state_on_off'])
 
 	return peer
 
 
-def find_by_ip(conn: database.sqlite3.Connection, ip: str) -> 'Peer':
+def find_by_ip_and_name(conn: database.sqlite3.Connection, ip: str, your_name: str) -> 'Peer':
 	""" Retrieve the peer with the given session_id
 
 	Parameters:
 		conn - the db connection
 		session_id - session id for a peer
-
 	Returns:
 		peer - first matching result for the research
 	"""
 	c = conn.cursor()
-	c.execute('SELECT * FROM peers WHERE ip = ?', (ip,))
+	c.execute('SELECT * FROM peers WHERE ip = ? AND your_name = ?', (ip, your_name))
 	row = c.fetchone()
 
 	if row is None:
 		return None
-
-	peer = Peer(row['session_id'], ip, row['port'])
+	
+	peer = Peer(row['session_id'], ip, your_name , row['port'], row['state_on_off'])
 
 	return peer
 
@@ -70,16 +74,36 @@ def file_unlink(conn: database.sqlite3.Connection, session_id: str, file_md5: st
 		conn - the db connection
 		session_id - session id for a peer
 		file_md5 - md5 hash of a file
-
 	Returns:
 		bool - true or false either if it succeds or fails
 	"""
-
 	c = conn.cursor()
 	c.execute('DELETE FROM files_peers WHERE file_md5 = ? AND session_id = ?', (file_md5, session_id,))
 
 
 def get_peers_by_file(conn: database.sqlite3.Connection, file_md5: str) -> list:
+	""" Retrieve all the peers that have the given file
+
+		Parameters:
+			conn - the db connection
+			query - keyword for the search
+		Returns:
+			peers list - the list of corresponding peers
+	"""
+	c = conn.cursor()
+
+	c.execute(
+		'SELECT p.ip, p.your_name, p.port, p.state_on_off '
+		'FROM peers AS p NATURAL JOIN files_peers AS f_p '
+		'WHERE f_p.file_md5 = ?',
+		(file_md5,)
+	)
+
+	peer_rows = c.fetchall()
+
+	return peer_rows
+
+def get_files_by_peer(conn: database.sqlite3.Connection, session_id: str) -> list:
 	""" Retrieve all the peers that have the given file
 		Parameters:
 			conn - the db connection
@@ -90,11 +114,12 @@ def get_peers_by_file(conn: database.sqlite3.Connection, file_md5: str) -> list:
 	c = conn.cursor()
 
 	c.execute(
-		'SELECT p.ip, p.port '
-		'FROM peers AS p NATURAL JOIN files_peers AS f_p '
-		'WHERE f_p.file_md5 = ?',
-		(file_md5,)
+		'SELECT f.file_md5, f.file_name '
+		'FROM files AS f NATURAL JOIN files_peers AS f_p '
+		'WHERE f_p.session_id = ?',
+		(session_id,)
 	)
-	peer_rows = c.fetchall()
 
+	peer_rows = c.fetchall()
+	
 	return peer_rows

@@ -11,33 +11,34 @@ import uuid
 db_file = 'directory.db'
 
 
-def serve(request: bytes) -> str:
+def serve(request: bytes, client_address: str) -> str:
 	""" Handle the peer request
+	
 	Parameters:
 		request - the list containing the request parameters
 	Returns:
 		str - the response
 	"""
 	command = request[0:4].decode('UTF-8')
-
 	if command == "LOGI":
-
-		if len(request) != 64:
-			return "0" * 16
-
-		ip = request[4:59].decode('UTF-8')
-		port = request[59:64].decode('UTF-8')
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 3:
+			return "Invalid request. Usage is: LOGI_<yourname>_<port>"
+		
+		ip = client_address
+		your_name = list_items[1]
+		port = list_items[2]
 
 		try:
 			conn = database.get_connection(db_file)
 			conn.row_factory = database.sqlite3.Row
-
 		except database.Error as e:
 			print(f'Error: {e}')
 			return "0" * 16
 
 		try:
-			peer = peer_repository.find_by_ip(conn, ip)
+			peer = peer_repository.find_by_ip_and_name(conn, ip, your_name)
 
 			# if the peer didn't already logged in
 			if peer is None:
@@ -49,7 +50,7 @@ def serve(request: bytes) -> str:
 					session_id = str(uuid.uuid4().hex[:16].upper())
 					peer = peer_repository.find(conn, session_id)
 
-				peer = Peer(session_id, ip, port)
+				peer = Peer(session_id, ip, your_name, port)
 				peer.insert(conn)
 
 			conn.commit()
@@ -58,23 +59,22 @@ def serve(request: bytes) -> str:
 		except database.Error as e:
 			conn.close()
 			print(f'Error: {e}')
-			return "0" * 16
+			return "con cac" + "0" * 16
 
 		return "ALGI" + peer.session_id
 
 	elif command == "ADDF":
-
-		if len(request) != 152:
-			return "Invalid request. Usage is: ADDF<your_session_id><file_md5><filename>"
-
-		session_id = request[4:20].decode('UTF-8')
-		md5 = request[20:52].decode('UTF-8')
-		name = request[52:152].decode('UTF-8').lower()
-
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 3:
+			return "Invalid request. Usage is: ADDF_<filename>_<your_session_id>"
+		
+		session_id = list_items[2]
+		name = list_items[1]
+		
 		try:
 			conn = database.get_connection(db_file)
 			conn.row_factory = database.sqlite3.Row
-
 		except database.Error as e:
 			print(f'Error: {e}')
 			return "The server has encountered an error while trying to serve the request."
@@ -85,20 +85,17 @@ def serve(request: bytes) -> str:
 			if peer is None:
 				conn.close()
 				return "Unauthorized: your SessionID is invalid"
-
+			
+			md5 = str(uuid.uuid4().hex[:16].upper())
 			file = file_repository.find(conn, md5)
+			while file is not None:
+				
+				md5 = str(uuid.uuid4().hex[:16].upper())
+				file = file_repository.find(conn, md5)
 
-			if file is None:
-				file = File(md5, name, 0)
-				file.insert(conn)
-				file_repository.add_owner(conn, md5, session_id)
-			else:
-				file.file_name = name
-				file.update(conn)
-				if not file_repository.peer_has_file(conn, session_id, md5):
-					file_repository.add_owner(conn, md5, session_id)
-
-			num_copies = file_repository.get_copies(conn, md5)
+			file = File(md5, name, 0)
+			file.insert(conn)
+			file_repository.add_owner(conn, md5, session_id)
 
 			conn.commit()
 			conn.close()
@@ -108,16 +105,16 @@ def serve(request: bytes) -> str:
 			conn.close()
 			print(f'Error: {e}')
 			return "The server has encountered an error while trying to serve the request."
-
-		return "AADD" + str(num_copies).zfill(3)
+		return f'AADD file with name {name} to repository'
 
 	elif command == "DELF":
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 3:
+			return "Invalid request. Usage is: DELF_<file_md5>_<your_session_id>"
 
-		if len(request) != 52:
-			return "Invalid request. Usage is: DELF<your_session_id><file_md5>"
-
-		session_id = request[4:20].decode('UTF-8')
-		md5 = request[20:52].decode('UTF-8')
+		session_id = list_items[2]
+		md5 = list_items[1]
 
 		try:
 			conn = database.get_connection(db_file)
@@ -155,15 +152,16 @@ def serve(request: bytes) -> str:
 			print(f'Error: {e}')
 			return "The server has encountered an error while trying to serve the request."
 
-		return "ADEL" + str(copy).zfill(3)
+		return f"ADEL delete copies of {md5} from {session_id}" 
 
 	elif command == "FIND":
-
-		if len(request) != 40:
-			return "Invalid command. Usage is: FIND<your_session_id><query_string>"
-
-		session_id = request[4:20].decode('UTF-8')
-		query = request[20:40].decode('UTF-8').lower().lstrip().rstrip()
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 3:
+			return "Invalid command. Usage is: FIND_<query_string>_<your_session_id>"
+		
+		session_id = list_items[2]
+		query = list_items[1]
 
 		if query != '*':
 			query = '%' + query + '%'
@@ -187,7 +185,7 @@ def serve(request: bytes) -> str:
 			if total_file == 0:
 				return 'AFIN' + str(total_file).zfill(3)
 
-			result = str(total_file).zfill(3)
+			result = str(total_file).zfill(3) + '\n'
 
 			file_list = file_repository.get_files_with_copy_amount_by_querystring(conn, query)
 
@@ -195,16 +193,16 @@ def serve(request: bytes) -> str:
 				file_md5 = file_row['file_md5']
 				file_name = file_row['file_name']
 				copies = file_row['copies']
-
-				result = result + file_md5 + file_name + str(copies).zfill(3)
+				result = result + file_md5 + ' ' + file_name + ' ' + str(copies).zfill(3) + '\n'
 
 				peer_list = peer_repository.get_peers_by_file(conn, file_md5)
 
 				for peer_row in peer_list:
 					peer_ip = peer_row['ip']
+					peer_name = peer_row['your_name']
 					peer_port = peer_row['port']
 
-					result = result + peer_ip + peer_port
+					result = result +"---" +  peer_ip + ' ' + peer_name + ' ' + peer_port + "\n"
 
 			conn.commit()
 			conn.close()
@@ -218,21 +216,20 @@ def serve(request: bytes) -> str:
 		return "AFIN" + result
 
 	elif command == "DREG":
-
-		if len(request) != 52:
-			return "Invalid request. Usage is: DREG<your_session_id><file_md5>"
-
-		session_id = request[4:20].decode('UTF-8')
-		md5 = request[20:52].decode('UTF-8')
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 3:
+			return "Invalid request. Usage is: DREG_<file_md5>_<your_session_id>"
+		
+		session_id = list_items[2]
+		md5 = list_items[1]
 
 		try:
 			conn = database.get_connection(db_file)
 			conn.row_factory = database.sqlite3.Row
-
 		except database.Error as e:
 			print(f'Error: {e}')
 			return "The server has encountered an error while trying to serve the request."
-
 		try:
 			peer = peer_repository.find(conn, session_id)
 
@@ -257,14 +254,15 @@ def serve(request: bytes) -> str:
 			print(f'Error: {e}')
 			return "The server has encountered an error while trying to serve the request."
 
-		return "ADRE" + str(file.download_count).zfill(5)
+		return f"ADRE register to download file md5 {md5} with name {file.file_name}." 
 
 	elif command == "LOGO":
+		items = request.decode('utf-8')
+		list_items = items.split('_')
+		if len(list_items) != 2:
+			return "Invalid request. Usage is: LOGO_<your_session_id>"
 
-		if len(request) != 20:
-			return "Invalid request. Usage is: LOGO<your_session_id>"
-
-		session_id = request[4:20].decode('UTF-8')
+		session_id = list_items[1]
 
 		try:
 			conn = database.get_connection(db_file)
@@ -298,3 +296,61 @@ def serve(request: bytes) -> str:
 
 	else:
 		return "Command \'" + request.decode('UTF-8') + "\' is invalid, try again."
+	
+
+def find(request: bytes):
+	items = request.decode('utf-8')
+	list_items = items.split('_')
+	session_id = list_items[2]
+	query = list_items[1]
+	if query != '*':
+		query = '%' + query + '%'
+	try:
+		conn = database.get_connection(db_file)
+		conn.row_factory = database.sqlite3.Row
+
+	except database.Error as e:
+		print(f'Error: {e}')
+		return "The server has encountered an error while trying to serve the request."
+
+	try:
+		peer = peer_repository.find(conn, session_id)
+
+		if peer is None:
+			conn.close()
+			return "Unauthorized: your SessionID is invalid"
+
+		total_file = file_repository.get_files_count_by_querystring(conn, query)
+		if total_file == 0:
+			return None
+
+		result = str(total_file).zfill(3) + '\n'
+
+		file_list = file_repository.get_files_with_copy_amount_by_querystring(conn, query)
+		res_list = []
+		for file_row in file_list:
+			peer_list = peer_repository.get_peers_by_file(conn, file_row['file_md5'])
+			for peer_row in peer_list:
+				peer_ip = peer_row['ip']
+				peer_name = peer_row['your_name']
+				peer_port = peer_row['port']
+				peer_state = peer_row['state_on_off']
+				res_list.append({
+					'file_name' : file_row['file_name'],
+					'file_md5': file_row['file_md5'],
+					'your_name': peer_name,
+					'ip': peer_ip,
+					'port': peer_port,
+					'state_on_off': peer_state
+				})
+
+		conn.commit()
+		conn.close()
+
+	except database.Error as e:
+		conn.rollback()
+		conn.close()
+		print(f'Error: {e}')
+		return "The server has encountered an error while trying to serve the request."
+
+	return res_list

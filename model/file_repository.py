@@ -23,7 +23,6 @@ def find(conn: database.sqlite3.Connection, file_md5: str) -> 'File':
 	Parameters:
 		conn - the db connection
 		file_md5 - the md5 of the file
-
 	Returns:
 		file - the istance of the founded file
 	"""
@@ -33,7 +32,7 @@ def find(conn: database.sqlite3.Connection, file_md5: str) -> 'File':
 
 	if row is None:
 		return None
-
+	
 	file = File(file_md5, row['file_name'], row['download_count'])
 
 	return file
@@ -106,8 +105,9 @@ def delete_peer_files(conn: database.sqlite3.Connection, session_id: str) -> int
 		'		HAVING COUNT(file_md5) = 1)) ',
 		(session_id,)
 	).rowcount
-	deleted += c.execute('DELETE FROM files_peers WHERE session_id=?', (session_id,)).rowcount
 
+	deleted += c.execute('DELETE FROM files_peers WHERE session_id=?', (session_id,)).rowcount
+	
 	return deleted
 
 
