@@ -3,6 +3,7 @@
 from service.Server import Server
 from database import database
 from utils import shell_colors as shell
+import ServerGUI
 
 if __name__ == '__main__':
 
@@ -22,5 +23,6 @@ if __name__ == '__main__':
 
 	# fill the database for testing ServerGui and ServerFunction, comment out if neccessary
 	database.fill_seeds(DB_FILE)
-
+	
 	Server(3000).run()
+	ServerGUI.ServerMainMenu()

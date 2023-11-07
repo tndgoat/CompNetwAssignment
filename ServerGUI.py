@@ -20,5 +20,3 @@ def ServerMainMenu():
     showAllUser.grid(row=3,column=0)
 
     menu.mainloop()
-
-ServerMainMenu()
