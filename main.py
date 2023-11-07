@@ -20,4 +20,7 @@ if __name__ == '__main__':
 	else:
 		database.reset_database(DB_FILE)
 
+	# fill the database for testing ServerGui and ServerFunction, comment out if neccessary
+	database.fill_seeds(DB_FILE)
+
 	Server(3000).run()

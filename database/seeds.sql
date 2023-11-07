@@ -1,10 +1,14 @@
-INSERT INTO `peers` (`session_id`, `ip` , `your_name`, `port`)
+INSERT INTO `peers` (`session_id`, `ip` , `your_name`, `port`,'state_on_off')
 VALUES
-('ABCD1234ABCD1234', '172.016.001.001|FC00:2001:db8a:a0b2:12f0:a13w:0001:0001', 'tung nd', '50001'),
-('EFGH1234EFGH1234', '172.016.001.002|FC00:2001:db8a:a0b2:12f0:a13w:0001:0002', 'binh nd', '50002'),
-('ILMN1234ILMN1234', '172.016.001.003|FC00:2001:db8a:a0b2:12f0:a13w:0001:0003', 'danh mh', '50003'),
-('OPQR1234OPQR1234', '172.016.001.004|FC00:2001:db8a:a0b2:12f0:a13w:0001:0004', 'hien lq', '50004'),
-('STUV1234STUV1234', '172.016.001.005|FC00:2001:db8a:a0b2:12f0:a13w:0001:0005', 'khanh lb', '50005');
+('ABCD1234ABCD1234', '172.016.001.001|FC00:2001:db8a:a0b2:12f0:a13w:0001:0001', 'tung nd', '50001',0),
+('EFGH1234EFGH1234', '172.016.001.002|FC00:2001:db8a:a0b2:12f0:a13w:0001:0002', 'binh nd', '50002',0),
+('ILMN1234ILMN1234', '172.016.001.003|FC00:2001:db8a:a0b2:12f0:a13w:0001:0003', 'danh mh', '50003',0),
+('OPQR1234OPQR1234', '172.016.001.004|FC00:2001:db8a:a0b2:12f0:a13w:0001:0004', 'hien lq', '50004',0),
+('STUV1234STUV1234', '172.016.001.005|FC00:2001:db8a:a0b2:12f0:a13w:0001:0005', 'khanh lb', '50005',0);
+
+INSERT INTO `peers_account` (`session_id`,`username`,`password_account`)
+VALUES
+('OPQR1234OPQR1234','hienlq16103','123456');
 
 INSERT INTO `files` (`file_md5`, `file_name`, `download_count`)
 VALUES
