@@ -51,7 +51,7 @@ class Server:
 			#self.ss.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 			# Bind the local address (sockaddr) to the socket (ss)
-			self.ss.bind(('192.168.1.173', self.port))
+			self.ss.bind((socket.gethostbyname(socket.gethostname()), self.port))
 
 			# Transform the socket in a passive socket and
 			# define a queue of SOMAXCONN possible connection requests

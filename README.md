@@ -2,7 +2,7 @@
 
 ## DEVELOP A NETWORK APPLICATION: BUILD A SIMPLE FILE-SHARING APPLICATION
 
-> ### Centralized Directory Service
+<!-- > ### Centralized Directory Service
 > **1. Client contacts Server (via TCP)**
 >   * Provides a list of files it will share
 >   * ...and Server’s central server updates the directory
@@ -78,4 +78,4 @@ ADRE[4B].\#download[5B]
 ## Authors :rocket:
 * [Tung Nguyen Duy](https://github.com/tndgoat)
 
-Enjoy :sunglasses:
+Enjoy :sunglasses: -->

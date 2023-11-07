@@ -25,40 +25,8 @@ import multiprocessing
 db_file = 'directory.db'
 
 
-# Tao cua so dang ki cho Client
-def register(root):
-  root.destroy()
-  # tao cua so chinh dang ki tai khoan
-  root = tk.Tk()
-  root.title("Đăng ký tài khoản")
-
-  # Tao cac o dien thong tin
-  username_label = tk.Label(root, text="Tên tài khoản:")
-  username_label.pack()
-  username_entry = tk.Entry(root)
-  username_entry.pack()
-
-  password_label = tk.Label(root, text="Mật khẩu:")
-  password_label.pack()
-  password_entry = tk.Entry(root, show="*")  # Mat khau Client nhap vao se bi an
-  password_entry.pack()
-
-
-  password_rep_label = tk.Label(root, text="Xác nhận mật khẩu:")
-  password_rep_label.pack()
-  password_rep_entry = tk.Entry(root, show="*")  # Mat khau Client nhap vao se bi an
-  password_rep_entry.pack()
-
-
-  # Tao nut dang ki
-  register_button = tk.Button(root, text="Đăng ký", command=lambda: register_user(root, username_entry.get(), password_entry.get(), password_rep_entry.get()))
-  register_button.pack()
-
-  root.mainloop()
-
-
-# handle error cho dang ki thong tin Client
-def register_user(root, username: str, password: str, password_rep: str) :
+# Xu ly dang ky cho Client
+def register_user(root, username: str, password: str, password_rep: str):
     if username and password and password_rep:
         if(password_rep != password):
             messagebox.showerror("Lỗi", "Mật khẩu không khớp!")
@@ -90,6 +58,54 @@ def register_user(root, username: str, password: str, password_rep: str) :
         messagebox.showerror("Lỗi", "Vui lòng điền cả tên tài khoản và mật khẩu.")
 
 
+# Tao cua so dang ki cho Client
+def register(root):
+  root.destroy()
+  # tao cua so chinh dang ki tai khoan
+  root = tk.Tk()
+  root.title("Đăng ký tài khoản")
+
+  # Tao cac o dien thong tin
+  username_label = tk.Label(root, text="Tên tài khoản:")
+  username_label.pack()
+  username_entry = tk.Entry(root)
+  username_entry.pack()
+
+  password_label = tk.Label(root, text="Mật khẩu:")
+  password_label.pack()
+  password_entry = tk.Entry(root, show="*")  # Mat khau Client nhap vao se bi an
+  password_entry.pack()
+
+  password_rep_label = tk.Label(root, text="Xác nhận mật khẩu:")
+  password_rep_label.pack()
+  password_rep_entry = tk.Entry(root, show="*")  # Mat khau Client nhap vao se bi an
+  password_rep_entry.pack()
+
+  # Tao nut dang ki
+  register_button = tk.Button(root, text="Đăng ký", command=lambda: register_user(root, username_entry.get(), password_entry.get(), password_rep_entry.get()))
+  register_button.pack()
+
+  root.mainloop()
+
+
+# Luu thong tin Client dang ki he thong vao database
+def save_peer(root, session_id, ip, your_name, port):
+  try:
+    conn = database.get_connection(db_file)
+    conn.row_factory = database.sqlite3.Row
+
+  except database.Error as e:
+    print(f'Error: {e}')
+
+  peer = Peer(session_id=session_id, ip = ip, your_name = your_name, port = port, state_on_off=False)
+  peer.insert(conn=conn)
+  conn.commit()
+
+  root.destroy()
+
+  login()
+
+
 # Dong cua so dang ki -> nhap thong tin co ban
 def show_account_info(session_id: str):
     account_info_window = tk.Tk()
@@ -110,22 +126,6 @@ def show_account_info(session_id: str):
     close_button.pack()
 
     account_info_window.mainloop()
-
-
-# Luu thong tin Client dang ki he thong vao database
-def save_peer(root, session_id, ip, your_name, port):
-  try:
-    conn = database.get_connection(db_file)
-    conn.row_factory = database.sqlite3.Row
-
-  except database.Error as e:
-    print(f'Error: {e}')
-
-  peer = Peer(session_id=session_id, ip = ip, your_name = your_name, port = port, state_on_off=False)
-  peer.insert(conn=conn)
-  conn.commit()
-  root.destroy()
-  login()         # sau khi dang ki xong Client duoc chuyen den site dang nhap
 
 
 # Client main view
@@ -178,7 +178,9 @@ def main_view(session_id:str):
       HOST_download = values[3]
       PORT_download = int(values[4])
       client_socket.connect((HOST_download, PORT_download))
-      client_socket.send(f"Please send me {values[0]}".encode('utf-8')) 
+      client_socket.send(f"Please send me {values[0]}".encode('utf-8'))
+      message = f"Toi la {client_socket.getsockname()[0]}. Ban co the gui cho toi file {values[0]} duoc khong?".encode('utf-8')
+      messagebox.showinfo("Require", message)
       file_name = client_socket.recv(1024).decode()
       print(f"File name: {file_name}")
       file_size = client_socket.recv(1024).decode()
@@ -251,7 +253,7 @@ def main_view(session_id:str):
 
 # abcxyz
 def user_cli(session_id:str):
-  HOST = '192.168.1.173'
+  HOST = '10.0.130.251'
   PORT_SERVER = 3000
   session = session_id 
   while True:
@@ -308,6 +310,8 @@ def show_dialog(message:str, client_address:str):
         return False
     else:
         print("Dialog closed or an error occurred")
+
+
 def source_node(session_id:str):
   try:
     conn = database.get_connection(db_file)
@@ -315,8 +319,9 @@ def source_node(session_id:str):
   except database.Error as e:
     print(f'Error: {e}')
   PORT = peer_repository.find(conn=conn, session_id=session_id).port
+  HOST = peer_repository.find(conn=conn, session_id=session_id).ip
   conn.close()
-  HOST = socket.gethostbyname(socket.gethostname())
+  # HOST = socket.gethostbyname(socket.gethostname())
   def child(client_socket, file_path):
     file = open(file_path, 'rb')
     file_size = os.path.getsize(file_path)
@@ -339,7 +344,7 @@ def source_node(session_id:str):
     client_socket, client_address = server.accept()
     print(f"Connection from {client_address}")
     request = client_socket.recv(1024).decode('utf-8')
-    result = messagebox.askyesno("Flash Message", "Do you want to continue?")
+    result = messagebox.askyesno("Flash Message", "Đồng ý gửi file?")
     if(result):
       file = filedialog.askopenfilename()
       if(file):
@@ -362,7 +367,8 @@ def logic(root, username:str, password:str):
   if peer_account is not None:
     if password == peer_account.password_account:
       peer = peer_repository.find(conn, peer_account.session_id)
-      peer.ip = socket.gethostbyname(socket.gethostname())
+      # peer.ip = socket.gethostbyname(socket.gethostname())
+      peer.ip = peer_repository.find(conn=conn, session_id=peer_account.session_id).ip
       peer.state_on_off = True
       peer.update(conn)
       conn.commit()
