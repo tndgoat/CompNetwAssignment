@@ -1,6 +1,6 @@
 # Computer Network Assignment
 
-## DEVELOP A NETWORK APPLICATION: BUILD A SIMPLE FILE-SHARING APPLICATION
+### Develop a Network Application: Build a simple File-sharing application
 
 <!-- > ### Centralized Directory Service
 > **1. Client contacts Server (via TCP)**
