@@ -3,6 +3,7 @@ import tkinter as tk
 import sys
 import os
 from tkinter import messagebox
+from tkinter import simpledialog
 from database import database
 from model.Peer import Peer
 from model.Peer import Peer_account
@@ -25,12 +26,13 @@ import multiprocessing
 db_file = 'directory.db'
 
 
-# Xu ly dang ky cho Client
+# Xu ly dang ky cho Client va luu thong tin Client vao database
 def register_user(root, username: str, password: str, password_rep: str):
     if username and password and password_rep:
         if(password_rep != password):
             messagebox.showerror("Lỗi", "Mật khẩu không khớp!")
         else:
+          # ket noi voi database de kiem tra xem tinh xac thuc cua tai khoan
           try:
             conn = database.get_connection(db_file)
             conn.row_factory = database.sqlite3.Row
@@ -88,7 +90,7 @@ def register(root):
   root.mainloop()
 
 
-# Luu thong tin Client dang ki he thong vao database
+# cap nhat thong tin Client dang nhap he thong vao database
 def save_peer(root, session_id, ip, your_name, port):
   try:
     conn = database.get_connection(db_file)
@@ -131,9 +133,17 @@ def show_account_info(session_id: str):
 # Client main view
 def main_view(session_id:str):
   def add_file_to_list():
-      file_path = filedialog.askopenfilename()  # Hiển thị hộp thoại mở tệp và lấy đường dẫn tệp đã chọn
-      if file_path:
-          handler.serve(f"ADDF_{file_path.split('/')[-1]}_{session_id}".encode('utf-8'), socket.gethostbyname(socket.gethostname()))
+    file_path = filedialog.askopenfilename()  # Hiển thị hộp thoại mở tệp và lấy đường dẫn tệp đã chọn
+    if file_path:
+        new_file_name = simpledialog.askstring("Nhập fname", "Nhập tên fname cho file này:")
+        if new_file_name:
+            file_name = file_path.split('/')[-1]
+            modified_file_name = file_name + "%" +new_file_name  # Tạo tên mới theo format mong muốn
+            
+            # Display the modified file name in the list
+            treeview.insert("", "end", values=(file_name, modified_file_name))
+
+            handler.serve(f"ADDF_{modified_file_name.split('/')[-1]}_{session_id}".encode('utf-8'), socket.gethostbyname(socket.gethostname()))
   
   def check(treeview, conn, session_id):
     file_list = peer_repository.get_files_by_peer(conn=conn, session_id=session_id)
@@ -149,7 +159,7 @@ def main_view(session_id:str):
       treeview.delete(item)
     
     treeview.grid(row=3, column= 0, padx= 0, pady= 0)
-    treeview.heading("Column 1", text="File name")
+    treeview.heading("Column 1", text="fname")
     treeview.heading("Column 2", text="File ID")
     treeview.heading("Column 3", text="Name")
     treeview.heading("Column 4", text="IP Address")
@@ -164,7 +174,7 @@ def main_view(session_id:str):
       for source in list_source:
         if source['state_on_off']:
           treeview.insert("", "end",
-              values=(source['file_name'],
+              values=(source['file_name'].split('%')[-1],
                       source['file_md5'],
                       source['your_name'],
                       source['ip'],
@@ -179,8 +189,19 @@ def main_view(session_id:str):
       PORT_download = int(values[4])
       client_socket.connect((HOST_download, PORT_download))
       client_socket.send(f"Please send me {values[0]}".encode('utf-8'))
-      message = f"Toi la {client_socket.getsockname()[0]}. Ban co the gui cho toi file {values[0]} duoc khong?".encode('utf-8')
-      messagebox.showinfo("Require", message)
+
+      try:
+        conn = database.get_connection(db_file)
+        conn.row_factory = database.sqlite3.Row
+      except database.Error as e:
+        print(f'Error: {e}')
+      
+      print(session_id)
+      peer = peer_repository.find(conn, session_id)
+      message = f"Tôi là \"{peer.your_name}\". Bạn có thể gửi cho tôi file \"{values[0]}\" được không?"
+      decoded_message = message.encode('utf-8').decode('utf-8')
+      messagebox.showinfo("Require", decoded_message)
+      print("\n")
       file_name = client_socket.recv(1024).decode()
       print(f"File name: {file_name}")
       file_size = client_socket.recv(1024).decode()
@@ -205,23 +226,27 @@ def main_view(session_id:str):
       file.close()
       client_socket.close()
       root.after(1000,lambda: success_label.destroy())
+
   try:
     conn = database.get_connection(db_file)
     conn.row_factory = database.sqlite3.Row
   except database.Error as e:
     print(f'Error: {e}')
+  
   file_list = peer_repository.get_files_by_peer(conn=conn, session_id=session_id)
+  
   # Tạo cửa sổ chính
   root = tk.Tk()
   root.title("Main user view")
+  
   # Tạo danh sách và đặt nó vào cửa sổ
   treeview = ttk.Treeview(root, columns=("Column 1", "Column 2"), show="headings")
   treeview_x = ttk.Treeview(root, columns=("Column 1", "Column 2", 'Column 3', 'Column 4', 'Column 5'), show="headings")
   treeview.grid(row=0, column= 0, padx= 0, pady= 0)
-    # Đặt tên cho các cột
-  treeview.heading("Column 1", text="File name")
+  
+  # Đặt tên cho các cột
+  treeview.heading("Column 1", text="lname%fname")
   treeview.heading("Column 2", text="File ID")
-
   # Cấu hình căn giữa cho mỗi cột
   treeview.column("Column 1", anchor="center")
   treeview.column("Column 2", anchor="center")
@@ -230,23 +255,31 @@ def main_view(session_id:str):
     treeview.insert("", "end", values=(file['file_name'], file['file_md5']))
 
   root.after(100, lambda: check(treeview=treeview, conn=conn, session_id=session_id))
+
   # Tạo nút để chọn tệp và thêm vào danh sách
   add_file_button = tk.Button(root, text="Add File", command=add_file_to_list)
   add_file_button.grid(row=1, column=0, padx=10, pady=10)
+
   frame = tk.Frame(root)
   frame.grid(row=2, column=0, padx=10, pady=10)
-  seek_file = tk.Label(frame, text="Nhập file :")
+
+  seek_file = tk.Label(frame, text="Nhập file:")
   seek_file.grid(row=1, column=0, padx=10, pady=10)
+  
   seek_file_entry = tk.Entry(frame)
   seek_file_entry.grid(row=2, column=0, padx=10, pady=10)
 
+  # Client nhap ten file can tim kiem
   submit_button = tk.Button(frame, text="Submit", command=lambda: find_source_files(treeview=treeview_x,
     message=f'FIND_{seek_file_entry.get()}_{session_id}'.encode('utf-8')
   ))
   submit_button.grid(row=2, column=1)
   treeview_x.bind('<<TreeviewSelect>>', download_from_source)
+
+  # Client dang xuat he thong
   exit_button = tk.Button(root, text='Log out', command= lambda: sys.exit(0))
   exit_button.grid(row=5,column=0,padx=10, pady=10)
+  
   # Bắt đầu vòng lặp chính của ứng dụng
   root.mainloop()
 
@@ -272,6 +305,7 @@ def user_cli(session_id:str):
       client_socket.connect((HOST_download, PORT_download))
       client_socket.send(f"Please send me {rcv_message.split(' ')[-1]}".encode('utf-8')) 
       file_name = client_socket.recv(1024).decode('utf-8')
+      print("\n")
       print(f"File name: {file_name}")
       file_size = client_socket.recv(1024).decode('utf-8')
       print(f"File size: {file_size}")
