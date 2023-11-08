@@ -22,6 +22,7 @@ from service import handler
 from tkinter import ttk
 import multiprocessing
 
+
 db_file = 'directory.db'
 
 
