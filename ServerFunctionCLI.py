@@ -1,6 +1,3 @@
-import tkinter
-from tkinter import messagebox
-from tkinter import ttk
 import sqlite3
 from prettytable import PrettyTable
 
@@ -17,7 +14,7 @@ def DiscoverHostname(hostname):
         headersTuple = ("Hostname","file_md5","file_name")
 
         if hostname == "":
-            messagebox.showerror("Hostname empty","Please enter a hostname")
+            print("Hostname empty","Please enter a hostname")
             return
 
         queryString = "SELECT A.username, F.file_md5, F.file_name FROM peers_account AS A, peers AS P, files AS F, files_peers AS R WHERE A.session_id=P.session_id AND P.session_id=R.session_id AND F.file_md5=R.file_md5 AND A.username=?"
@@ -25,9 +22,7 @@ def DiscoverHostname(hostname):
         outputRows = cursor.fetchall()
         
         PrintTable(headersTuple,outputRows)
-        DisplayQueryResult(headersTuple,outputRows,"Discovery Hostname")
     except sqlite3.Error as error:
-        messagebox.showerror("Connection error","Error while connecting to sqlite")
         print("Error while connecting to sqlite",error,"\n")
     finally:
         if connection:
@@ -43,7 +38,7 @@ def PingHostname(hostname):
         headersTuple = ("Hostname","online_state")
 
         if hostname == "":
-            messagebox.showerror("Hostname empty","Please enter a hostname")
+            print("Hostname empty","Please enter a hostname")
             return
 
         queryString = "SELECT A.username, P.state_on_off FROM peers_account AS A, peers AS P WHERE A.session_id = P.session_id AND A.username=?"
@@ -51,9 +46,7 @@ def PingHostname(hostname):
         outputRows = cursor.fetchall()
         
         PrintTable(headersTuple,outputRows)
-        DisplayQueryResult(headersTuple,outputRows,"Ping Hostname")
     except sqlite3.Error as error:
-        messagebox.showerror("Connection error","Error while connecting to sqlite")
         print("Error while connecting to sqlite",error,"\n")
     finally:
         if connection:
@@ -73,30 +66,13 @@ def ShowAllUser():
         outputRows = cursor.fetchall()
         
         PrintTable(headersTuple,outputRows)
-        DisplayQueryResult(headersTuple,outputRows,"Show all user")
     except sqlite3.Error as error:
-        messagebox.showerror("Connection error","Error while connecting to sqlite")
         print("Error while connecting to sqlite",error,"\n")
     finally:
         if connection:
             connection.close()
             print("The SQLite connection is closed\n")
 
-def DisplayQueryResult(headersTuple, outputRows, functionName):
-    resultWindow = tkinter.Tk()
-    resultWindow.title(functionName)
-
-    tree = ttk.Treeview(resultWindow,columns=headersTuple,show='headings')
-    for header in headersTuple:
-        tree.heading(header,text=header.replace("_"," "))
-    for row in outputRows:
-        tree.insert('',tkinter.END, values=row)
-    tree.grid(row=0,column=0,sticky='nsew')
-    scrollbar = tkinter.Scrollbar(resultWindow,orient=tkinter.VERTICAL,command=tree.yview)
-    tree.configure(yscrollcommand=scrollbar.set)
-    scrollbar.grid(row=0,column=1,sticky='ns')
-    resultWindow.mainloop()
-    
 def PrintTable(headersTuple,outputRows):
     table = PrettyTable()
     table.field_names = headersTuple
