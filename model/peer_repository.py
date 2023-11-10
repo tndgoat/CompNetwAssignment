@@ -67,6 +67,27 @@ def find_by_ip_and_name(conn: database.sqlite3.Connection, ip: str, your_name: s
 
 	return peer
 
+def find_by_ip_and_port(conn: database.sqlite3.Connection, ip: str, port: int) -> 'Peer':
+    """ Retrieve the peer with the given IP and port
+
+    Parameters:
+        conn - the database connection
+        ip - IP address of the peer
+        port - port number of the peer
+    Returns:
+        peer - first matching result for the search
+    """
+    c = conn.cursor()
+    c.execute('SELECT * FROM peers WHERE ip = ? AND port = ?', (ip, port))
+    row = c.fetchone()
+
+    if row is None:
+        return None
+
+    peer = Peer(row['session_id'], ip, row['your_name'], port, row['state_on_off'])
+
+    return peer
+
 def file_unlink(conn: database.sqlite3.Connection, session_id: str, file_md5: str) -> bool:
 	""" Unlink the peer with the given session_id from the file
 

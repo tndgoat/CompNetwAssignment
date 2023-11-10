@@ -21,6 +21,7 @@ from tkinter import filedialog, messagebox
 from service import handler
 from tkinter import ttk
 import multiprocessing
+from functools import partial
 
 
 db_file = 'directory.db'
@@ -145,6 +146,15 @@ def main_view(session_id:str):
 
             handler.serve(f"ADDF_{modified_file_name.split('/')[-1]}_{session_id}".encode('utf-8'), socket.gethostbyname(socket.gethostname()))
   
+  def remove_last_file():
+      children = treeview.get_children()
+      values = treeview.item(children[-1], 'values')
+      if children:
+          last_item = children[-1]
+          file_md5 = values[1]
+          treeview.delete(last_item)
+          handler.serve(f"DELF_{file_md5}_{session_id}".encode('utf-8'), socket.gethostbyname(socket.gethostname()))
+
   def check(treeview, conn, session_id):
     file_list = peer_repository.get_files_by_peer(conn=conn, session_id=session_id)
     for item in treeview.get_children():
@@ -196,7 +206,6 @@ def main_view(session_id:str):
       except database.Error as e:
         print(f'Error: {e}')
       
-      print(session_id)
       peer = peer_repository.find(conn, session_id)
       message = f"Tôi là \"{peer.your_name}\". Bạn có thể gửi cho tôi file \"{values[0]}\" được không?"
       decoded_message = message.encode('utf-8').decode('utf-8')
@@ -259,7 +268,7 @@ def main_view(session_id:str):
   # Tạo nút để chọn tệp và thêm vào danh sách
   add_file_button = tk.Button(root, text="Add File", command=add_file_to_list)
   add_file_button.grid(row=1, column=0, padx=10, pady=10)
-
+  
   frame = tk.Frame(root)
   frame.grid(row=2, column=0, padx=10, pady=10)
 
@@ -279,7 +288,11 @@ def main_view(session_id:str):
   # Client dang xuat he thong
   exit_button = tk.Button(root, text='Log out', command= lambda: sys.exit(0))
   exit_button.grid(row=5,column=0,padx=10, pady=10)
-  
+
+  # Tạo nút "Remove File"
+  remove_file_button = tk.Button(root, text="Remove File", command=remove_last_file)
+  remove_file_button.grid(row=6, column=0, padx=10, pady=10)
+    
   # Bắt đầu vòng lặp chính của ứng dụng
   root.mainloop()
 
