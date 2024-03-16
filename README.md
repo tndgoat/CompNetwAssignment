@@ -59,20 +59,19 @@ _Quickly look through the website_
 
 _To run the demo version of this application, you need to follow these steps:_
 
-1. Install XAMPP with version 3.3.0 or later.
-2. Clone the Repository and put it in C:\xampp\htdocs:
+1. Clone the Repository and put it in any folder:
    ```sh
-   cd C:\xampp\htdocs
-   git clone https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8.git
+   git clone https://github.com/tndgoat/CompNetw_Assignment1
    ```
-3. Click 'Start' for Apache and MySQL in the XAMPP interface.
-4. Go to the URL http://localhost/phpmyadmin/ to add a database.
-5. Click 'Import' -> Select the SQL file (smart_printing.sql - C:\xampp\htdocs\HCMUT-SSPS_L01_Group8\db\smart_printing.sql) in the database folder -> Click 'Go'.
-6. Visit the URL:
+3. run file main.py to create a server:
     ```sh
-        http://localhost/HCMUT-SSPS_L01_Group8
-    ```
-
+   python main.py
+   ```
+4. run file handle_new_peer.py to create peers:
+    ```sh
+   python handle_new_peer.py
+   ```
+5. Follow the instruction in the document
     <h2>Enjoy it 🥳</h2>
 
 <p align="right">[<a href="#readme-top">Back to Top 🔝</a>]</p>
@@ -85,12 +84,10 @@ _To run the demo version of this application, you need to follow these steps:_
 
 * Nguyễn Đức Bình - [@binhnguyen3816](https://github.com/binhnguyen3816) - binhnguyen3816@gmail.com
 * Nguyễn Duy Tùng - [@tndgoat](https://github.com/tndgoat) - tungnd.goat@gmail.com
-* Trần Nguyễn Thái Bình - [@BinhTran-HCMUT](https://github.com/BinhTran-HCMUT) - binh.tran0611csbk@hcmut.edu.vn
 * Mai Hoàng Danh - [@bznhg23](https://github.com/znhg23) - danh.maikhmt23@hcmut.edu.vn
-* Hồ Huy Hoàng - [@huyhoang379](https://github.com/huyhoang379) - hoang.ho260303@hcmut.edu.vn
-* Trương Hoàng Nguyên Vũ - [@LekiizRaii](https://github.com/LekiizRaii) - vu.truongcompsci@hcmut.edu.vn
+* Lê Quang Hiển - [@hienlq16103](https://github.com/hienlq16103) - hien.lequang47@hcmut.edu.vn
 
-Project Link: [https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8](https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8)
+Project Link: [https://github.com/tndgoat/CompNetw_Assignment1](https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8)
 
 <p align="right">[<a href="#readme-top">Back to Top 🔝</a>]</p>
 
@@ -100,11 +97,10 @@ Project Link: [https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8](https://gith
 After completing this Assignment, the team has achieved significant advantages for the constructed website:
 - [x] Attractive interface, well-organized layout, creating an enjoyable and user-friendly experience.
 - [x] Well-managed and organized code.
-- [x] Members have significantly reinforced their knowledge of HTML, CSS, PHP, and other relevant technologies.
 - [x] Great time and tasks management
 - [x] Keyword technique during researching for information
 
-Finally, all team members express gratitude to Mr. Le Dinh Thuan for imparting foundational knowledge and providing opportunities for the team to test their abilities with this project.
+Finally, all team members express gratitude to Mr. Le Bao Khanh for imparting foundational knowledge and providing opportunities for the team to test their abilities with this project.
 
 <p align="right">[<a href="#readme-top">Back to Top 🔝</a>]</p>
 
