@@ -2,23 +2,23 @@
 
 <!-- HCMUT LOGO -->
 <div align="center">
-  <a href="https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8">
+  <a href="https://github.com/tndgoat/CompNetw_Assignment1">
     <img src="Demo_image/logo_hcmut.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Software Engineering Project</h3>
+  <h3 align="center">Computer Networks Project</h3>
 
   <p align="center">
-    Design a smart printing service for students at HCMUT
+    Develop a network application: build a simple file-sharing application.
     <br />
-    <a href="https://drive.google.com/file/d/1YQNObS6fbrkyE2G39zZLntI5JqAn6NEf/view?usp=sharing"><strong>Explore the docs »</strong></a>
+    <a href="https://drive.google.com/file/d/1e8hVzyvJ0AzGjJgHZ8SgO-jvZtIxnlm_/view?usp=sharing"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="#getting-started-🚀">View Demo</a>
     ·
-    <a href="https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8/issues">Report Bug</a>
+    <a href="https://github.com/tndgoat/CompNetw_Assignment1">Report Bug</a>
     ·
-    <a href="https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8/issues">Request Feature</a>
+    <a href="https://github.com/tndgoat/CompNetw_Assignment1">Request Feature</a>
   </p>
 </div>
 
@@ -27,33 +27,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project 🔎
 
-![Main page](/Demo_image/Non-DefinedUser.png)
+![Main page](/Demo_image/manual5.png)
 
-In this semester (HK231), my team has been assigned an Assignment to design a smart printing service for students at HCMUT. You can find the full requirement: <a href="https://drive.google.com/file/d/1ep6OaNz_upYI6lGA58di6OHq7AVutPsG/view?usp=sharing"><strong> Here</strong></a>
-
-
-
-<p align="right">[<a href="#readme-top">Back to Top 🔝</a>]</p>
+In this semester (HK231), my team has been assigned an Assignment to build a simple file-sharing application. You can find the full requirement: <a href="https://drive.google.com/file/d/12Q3O8F_2EvqvYFCliV8Es86KBelm97va/view?usp=sharing"><strong> Here</strong></a>
 
 
-
-### Built With 👨🏻‍💻
-
-The following are the Programming Languages and Frameworks that my team uses during the process of working on this Assignment.
-
-* **Frontend:**
-  * [![HTML][html.logo]][HTML-url]
-  * [![CSS][css.logo]][CSS-url]
-  * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-  * [![JavaScript][js.logo]][JavaScript-url]
-
-* **Backend:**
-  * [![PHP][php.logo]][PHP-url]
-  * [![MySQL][mysql.logo]][MySQL-url]
-
-* **Most Used Languages:**
-
-    ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=LekiizRaii&exclude_repo=TFP-POC,Tetris,LekiizRaii,EnglishOCR,CO2011_HK221_Assignment&layout=pie)
 
 <p align="right">[<a href="#readme-top">Back to Top 🔝</a>]</p>
 
@@ -64,17 +42,17 @@ The following are the Programming Languages and Frameworks that my team uses dur
 
 _Quickly look through the website_
 
-![Main page](/Demo_image/SPSO.png)
+![Main page](/Demo_image/manual1.png)
 
-![Product page](/Demo_image/Students.png)
+![Product page](/Demo_image/manual2.png)
 
-![Search page](/Demo_image/Configuration&Preview.png)
+![Search page](/Demo_image/manual6.png)
 
-![News page](/Demo_image/UploadFile.png)
+![News page](/Demo_image/manual8.png)
 
-![Contact page](/Demo_image/Reports.png)
+![Contact page](/Demo_image/manual10.png)
 
-![Policy page](/Demo_image/Settings.png)
+![Policy page](/Demo_image/manual11.png)
 
 <!-- USAGE EXAMPLES -->
 ## Installation and Usage 📈
