@@ -3,7 +3,7 @@
 <!-- HCMUT LOGO -->
 <div align="center">
   <a href="https://github.com/LekiizRaii/HCMUT-SSPS_L01_Group8">
-    <img src="images/logo_hcmut.png" alt="Logo" width="80" height="80">
+    <img src="Demo_image/logo_hcmut.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Software Engineering Project</h3>
